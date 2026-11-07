@@ -1,0 +1,26 @@
+[package]
+name = "rust-nes"
+version = "0.1.0"
+edition = "2021"
+description = "A NES (Famicom) emulator written in Rust with P1/P2 key remapping and keyboard/gamepad support"
+license = "GPL-3.0-only"
+
+[dependencies]
+minifb = "0.27"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+gilrs = { version = "0.10", optional = true }
+cpal = { version = "0.15", optional = true }
+fontdue = "0.9"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+raw-window-handle = "0.6"
+x11-dl = "2"
+
+[features]
+default = ["gamepad", "audio"]
+gamepad = ["dep:gilrs"]
+audio = ["dep:cpal"]
+
+[profile.release]
+opt-level = 3
