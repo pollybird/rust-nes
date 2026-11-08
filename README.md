@@ -5,7 +5,7 @@
 - **CPU**：Ricoh 2A03（6502）全部官方指令 + 常见非法指令族（LAX/SAX/DCP/ISC/SLO/RLA/SRE/RRA/ARR/ANC 等），NMOS 十进制模式、NMI/IRQ/JAM 处理
 - **PPU**：2C02 扫描线渲染——背景卷轴、精灵（8x8 / 8x16、优先位、溢出/0 号精灵命中标志）、调色板、灰度/增亮/颜色强调、vblank NMI、OAM DMA
 - **APU**：2 脉冲 + 三角波 + 噪声通道、包络/扫频、240Hz/120Hz 帧序列器（通过 cpal 输出；DMC 未合成，属已知简化）
-- **镜像加载**：iNES 与 NES 2.0 头解析（含 PRG/CHR 容量、NES2.0 尺寸编码、battery/trainer/4-screen/镜像位），无头裸 PRG 镜像自动按 NROM 处理
+- **镜像加载**：iNES 与 NES 2.0 头解析；严格校验 Trainer/PRG/CHR 数据长度，支持 NES 2.0 线性与指数容量编码、PRG RAM 容量；Trainer 会装载到 `$7000-$71FF`。无头裸 PRG 镜像自动按 NROM 处理
 - **Mapper**：0 (NROM)、1 (MMC1)、2 (UxROM)、3 (CNROM)、4 (MMC3/MMC6)、7 (AxROM)、9 (MMC2)、11 (Color Dreams)、66 (MN3065)，覆盖红白机商业游戏绝大部分；不支持的 Mapper 启动时明确报错而不是黑屏
 - **电池存档**：SRAM 自动写回 `<镜像名>.nes.sram`
 - **启动器**：无参数启动时先选择 ROM 目录，自动列出该目录下全部游戏；选中开始、`Esc` 返回列表
@@ -125,6 +125,7 @@ src/
 
 - “所有 NES 镜像”：本模拟器覆盖最常见的 9 种 Mapper（约占商业游戏数量的 85% 以上）；MMC5、VRC 系列、BP/太阳城系等冷门 Board 未实现，加载时会提示不支持而非死机。
 - APU 未合成 DMC 通道（部分游戏的采样人声/低音缺失）；音频混音为简化模型。
+- ROM 解析仅提取 iNES/NES 2.0 标准头字段；标准头不包含游戏标题，启动器仍以文件名显示游戏。NES 2.0 CHR RAM 容量字段目前尚未完整接入 Mapper 分配。 
 - PPU 为扫描线粒度渲染：一行内的中途滚动/换色（每行 IRQ 精细分割）不生效，逐行 IRQ 分割正常。
 - 精灵 0 命中、溢出标志为近似时序实现。
 - 未做 PALETTE 精确校准（内置近似 NTSC 调色板）。

@@ -79,13 +79,20 @@ impl Console {
         if four_screen {
             // four-screen needs its extra tables; the PPU always has 4KB VRAM
         }
+        let mut sram = vec![0u8; sram_size.max(8192)];
+        // iNES trainers are copied to CPU $7000-$71FF (SRAM offset $1000).
+        if let Some(trainer) = rom.trainer_data.as_ref() {
+            if trainer.len() == 512 && sram.len() >= 0x1200 {
+                sram[0x1000..0x1200].copy_from_slice(trainer);
+            }
+        }
         Ok(Console {
             cpu: Cpu6502::new(),
             ppu,
             apu: Apu::new(),
             mapper,
             ram: [0; 2048],
-            sram: vec![0u8; sram_size.max(8192)],
+            sram,
             ctl1: Controller::default(),
             ctl2: Controller::default(),
             open_bus: 0,
