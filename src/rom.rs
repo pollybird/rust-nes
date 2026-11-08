@@ -157,19 +157,8 @@ impl Rom {
             let ram_size = if prg_ram == 0 && battery { 8 * 1024 } else { prg_ram };
             let _ = chr_ram; // CHR RAM is allocated by the PPU/Mapper when CHR-ROM is absent.
 
-            // NES 2.0 byte 12 describes timing, not nametable mirroring.
-            let title = if data.len() >= 24 {
-                data[12..24]
-                    .iter()
-                    .take_while(|&&b| b != 0)
-                    .map(|&b| if (0x20..0x7F).contains(&b) { b as char } else { ' ' })
-                    .collect::<String>()
-                    .trim()
-                    .to_string()
-            } else {
-                String::new()
-            };
-            (prg_len, chr_len, ram_size, title)
+            // The 16-byte iNES/NES 2.0 header has no standard title field.
+            (prg_len, chr_len, ram_size, String::new())
         } else {
             let prg_banks = data[4] as usize;
             let chr_banks = data[5] as usize;
