@@ -254,12 +254,17 @@ mod tests {
     fn ines_trainer_and_four_screen_are_distinct_flags() {
         let mut payload = vec![0xA5; TRAINER_LEN];
         payload.extend(vec![0x11; PRG_BANK_SIZE]);
-        let rom = Rom::parse(&ines(1, 0, 0x0C, 0, payload)).unwrap();
-        assert!(rom.info.trainer);
-        assert!(rom.info.four_screen);
-        assert_eq!(rom.trainer_data.as_ref().unwrap().len(), TRAINER_LEN);
-        assert_eq!(rom.trainer_data.as_ref().unwrap()[0], 0xA5);
-        assert_eq!(rom.prg[0], 0x11);
+        let trainer_rom = Rom::parse(&ines(1, 0, 0x04, 0, payload)).unwrap();
+        assert!(trainer_rom.info.trainer);
+        assert!(!trainer_rom.info.four_screen);
+        assert_eq!(trainer_rom.trainer_data.as_ref().unwrap().len(), TRAINER_LEN);
+        assert_eq!(trainer_rom.trainer_data.as_ref().unwrap()[0], 0xA5);
+        assert_eq!(trainer_rom.prg[0], 0x11);
+
+        let four_screen_rom = Rom::parse(&ines(1, 0, 0x08, 0, vec![0; PRG_BANK_SIZE])).unwrap();
+        assert!(!four_screen_rom.info.trainer);
+        assert!(four_screen_rom.info.four_screen);
+        assert!(four_screen_rom.trainer_data.is_none());
     }
 
     #[test]
