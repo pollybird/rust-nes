@@ -865,6 +865,7 @@ mod tests {
             } else {
                 (0..chr_banks8k).flat_map(|b| vec![64 + b as u8; 8192]).collect()
             },
+            trainer_data: None,
         }
     }
 
